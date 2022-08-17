@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"user-service/internal/app/domain"
-
-	"golang.org/x/crypto/bcrypt"
 )
 
 type UserRepository interface {
@@ -28,21 +26,15 @@ func (us UserService) Login(ctx context.Context, param domain.LoginParam) (strin
 		return "", errors.New("wrong email/password")
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(param.Password))
-	if err != nil {
+	if err := user.ComparePassword(param.Password); err != nil {
 		return "", errors.New("wrong email/password")
 	}
 	return generateJWT(user.ID)
 }
 
 func (us UserService) Register(ctx context.Context, param domain.RegisterParam) (string, error) {
-	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(param.Password), bcrypt.DefaultCost)
-	user := domain.User{
-		Name:     param.Name,
-		Email:    param.Email,
-		Password: string(hashedPassword),
-	}
-	if err := us.userRepo.Create(ctx, &user); err != nil {
+	user := domain.NewUser(param.Name, param.Email, param.Password)
+	if err := us.userRepo.Create(ctx, user); err != nil {
 		return "", errors.New("failed create user")
 	}
 	return generateJWT(user.ID)

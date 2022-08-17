@@ -6,7 +6,7 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-var signatureKey = []byte("mySuperSecretSignature")
+var signatureKey = []byte("mySignaturePrivateKey")
 
 func generateJWT(userID int) (string, error) {
 	claims := jwt.MapClaims{

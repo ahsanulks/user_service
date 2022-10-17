@@ -8,6 +8,6 @@ import (
 
 func WithBasicAuth() gin.HandlerFunc {
 	return gin.BasicAuth(gin.Accounts{
-		os.Getenv("USERNAME"): os.Getenv("PASSWORD"),
+		os.Getenv("USERSERVICE_USERNAME"): os.Getenv("USERSERVICE_PASSWORD"),
 	})
 }
